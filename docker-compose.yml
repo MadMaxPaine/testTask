@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontEnd
+    container_name: frontEnd
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=mdmxmp
+      - DB_PASSWORD=1111
+      - DB_NAME=testTask
+      - CLIENT_URL=http://localhost:3000
+    depends_on:
+      - postgres
+    command: ["npm", "start"]
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mdmxmp
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_DB: testTask
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
